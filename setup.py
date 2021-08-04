@@ -32,7 +32,7 @@ setup(
         'termtosvg',
         'termtosvg.tests'
     ],
-    scripts=['scripts/termtosvg'],
+    entry_points={'console_scripts': ['termtosvg = termtosvg.main:main']},
     include_package_data=True,
     install_requires=[
         'lxml',
