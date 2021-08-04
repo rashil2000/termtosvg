@@ -13,13 +13,13 @@ terminal unusable.
 
 import codecs
 import datetime
-import fcntl
+#  import fcntl
 import os
-import pty
+#  import pty
 import select
 import struct
-import termios
-import tty
+#  import termios
+#  import tty
 from collections import defaultdict, namedtuple
 from typing import Iterator
 
@@ -45,10 +45,10 @@ class TerminalMode:
         self.ttysize = None
 
     def __enter__(self):
-        try:
-            self.mode = tty.tcgetattr(self.fileno)
-        except tty.error:
-            pass
+        #  try:
+            #  self.mode = tty.tcgetattr(self.fileno)
+        #  except tty.error:
+        pass
 
         try:
             columns, lines = os.get_terminal_size(self.fileno)
@@ -60,11 +60,12 @@ class TerminalMode:
         return self.mode, self.ttysize
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.ttysize is not None:
-            fcntl.ioctl(self.fileno, termios.TIOCSWINSZ, self.ttysize)
+        pass
+        #  if self.ttysize is not None:
+            #  fcntl.ioctl(self.fileno, termios.TIOCSWINSZ, self.ttysize)
 
-        if self.mode is not None:
-            tty.tcsetattr(self.fileno, tty.TCSAFLUSH, self.mode)
+        #  if self.mode is not None:
+            #  tty.tcsetattr(self.fileno, tty.TCSAFLUSH, self.mode)
 
 
 def _record(process_args, columns, lines, input_fileno, output_fileno):
@@ -90,7 +91,7 @@ def _record(process_args, columns, lines, input_fileno, output_fileno):
     :param input_fileno: File descriptor of the input data stream
     :param output_fileno: File descriptor of the output data stream
     """
-    pid, master_fd = pty.fork()
+    #  pid, master_fd = pty.fork()
     if pid == 0:
         # Child process - this call never returns
         os.execlp(process_args[0], *process_args)
@@ -98,12 +99,12 @@ def _record(process_args, columns, lines, input_fileno, output_fileno):
     # Parent process
     # Set the terminal size for master_fd
     ttysize = struct.pack("HHHH", lines, columns, 0, 0)
-    fcntl.ioctl(master_fd, termios.TIOCSWINSZ, ttysize)
+    #  fcntl.ioctl(master_fd, termios.TIOCSWINSZ, ttysize)
 
-    try:
-        tty.setraw(input_fileno)
-    except tty.error:
-        pass
+    #  try:
+        #  tty.setraw(input_fileno)
+    #  except tty.error:
+        #  pass
 
     for data, time in _capture_output(input_fileno, output_fileno, master_fd):
         yield data, time
